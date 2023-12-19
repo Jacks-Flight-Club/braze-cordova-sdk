@@ -16,6 +16,7 @@
   @property NSString *enableGeofences;
   @property NSString *disableUNAuthorizationOptionProvisional;
   @property NSString *sessionTimeout;
+  @property NSString *triggerMinimumTimeInterval;
   @property NSString *enableSDKAuth;
   @property NSString *sdkAuthCallbackID;
 @end
@@ -43,6 +44,7 @@ static Braze *_braze;
   self.enableGeofences = settings[@"com.braze.geofences_enabled"];
   self.disableUNAuthorizationOptionProvisional = settings[@"com.braze.ios_disable_un_authorization_option_provisional"];
   self.sessionTimeout = settings[@"com.braze.ios_session_timeout"];
+  self.triggerMinimumTimeInterval = settings[@"com.braze.ios_trigger_minimum_time_interval"];
   self.enableSDKAuth = settings[@"com.braze.sdk_authentication_enabled"];
 
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didFinishLaunchingListener:) name:UIApplicationDidFinishLaunchingNotification object:nil];
@@ -64,6 +66,9 @@ static Braze *_braze;
   // Set the time interval for session time out (in seconds)
   NSNumber *timeout = [[[NSNumberFormatter alloc] init] numberFromString:self.sessionTimeout];
   [configuration setSessionTimeout:[timeout doubleValue]];
+  // Set the minimum time interval for trigger actions (in seconds)
+  NSNumber *interval = [[[NSNumberFormatter alloc] init] numberFromString:self.triggerMinimumTimeInterval];
+  [configuration setTriggerMinimumTimeInterval:[interval doubleValue]];
   [configuration.api addSDKMetadata:@[[BRZSDKMetadata cordova]]];
   self.braze = [[Braze alloc] initWithConfiguration:configuration];
   self.braze.inAppMessagePresenter = [[BrazeInAppMessageUI alloc] init];
@@ -452,6 +457,19 @@ static Braze *_braze;
   }
 
   [self sendCordovaSuccessPluginResultWithArray:mappedCards andCommand:command];
+}
+
+- (void)subscribeToContentCardsUpdates:(CDVInvokedUrlCommand *)command {
+  [self.subscriptions addObject:[self.braze.contentCards subscribeToUpdates:^(NSArray<BRZContentCardRaw *> *contentCards) {
+    
+    NSMutableArray *mappedCards = [NSMutableArray arrayWithCapacity:[contentCards count]];
+    [contentCards enumerateObjectsUsingBlock:^(id card, NSUInteger idx, BOOL *stop) {
+       [mappedCards addObject:[BrazePlugin formattedContentCard:card]];
+    }];
+      
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:mappedCards];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }]];
 }
 
 - (void)getCardCountForCategories:(CDVInvokedUrlCommand *)command {

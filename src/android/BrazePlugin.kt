@@ -385,6 +385,16 @@ open class BrazePlugin : CordovaPlugin() {
             GET_UNREAD_CARD_COUNT_FOR_CATEGORIES_METHOD -> return handleNewsFeedGetters(action, args, callbackContext)
             GET_CONTENT_CARDS_FROM_SERVER_METHOD,
             GET_CONTENT_CARDS_FROM_CACHE_METHOD -> return handleContentCardsUpdateGetters(action, callbackContext)
+            "subscribeToContentCardsUpdates" -> {
+                runOnBraze {
+                    it.subscribeToContentCardsUpdates { event: ContentCardsUpdatedEvent ->
+                        val result = PluginResult(PluginResult.Status.OK, mapContentCards(event.allCards))
+                        result.keepCallback = true
+                        callbackContext.sendPluginResult(result)
+                    }
+                }
+                return true
+            }
             LOG_CONTENT_CARDS_CLICKED_METHOD,
             LOG_CONTENT_CARDS_DISMISSED_METHOD,
             LOG_CONTENT_CARDS_IMPRESSION_METHOD -> return handleContentCardsLogMethods(action, args, callbackContext)
@@ -472,6 +482,9 @@ open class BrazePlugin : CordovaPlugin() {
         }
         if (cordovaPreferences.contains(DEFAULT_SESSION_TIMEOUT_PREFERENCE)) {
             configBuilder.setSessionTimeout(parseNumericPreferenceAsInteger(cordovaPreferences.getString(DEFAULT_SESSION_TIMEOUT_PREFERENCE, "10")))
+        }
+        if (cordovaPreferences.contains(DEFAULT_TRIGGER_ACTION_MINIMUM_TIME_INTERVAL_PREFERENCE)) {
+            configBuilder.setTriggerActionMinimumTimeIntervalSeconds(parseNumericPreferenceAsInteger(cordovaPreferences.getString(DEFAULT_TRIGGER_ACTION_MINIMUM_TIME_INTERVAL_PREFERENCE, "30")))
         }
         if (cordovaPreferences.contains(SET_HANDLE_PUSH_DEEP_LINKS_AUTOMATICALLY_PREFERENCE)) {
             configBuilder.setHandlePushDeepLinksAutomatically(cordovaPreferences.getBoolean(SET_HANDLE_PUSH_DEEP_LINKS_AUTOMATICALLY_PREFERENCE, true))
@@ -644,6 +657,7 @@ open class BrazePlugin : CordovaPlugin() {
         private const val LARGE_NOTIFICATION_ICON_PREFERENCE = "com.braze.android_large_notification_icon"
         private const val DEFAULT_NOTIFICATION_ACCENT_COLOR_PREFERENCE = "com.braze.android_notification_accent_color"
         private const val DEFAULT_SESSION_TIMEOUT_PREFERENCE = "com.braze.android_default_session_timeout"
+        private const val DEFAULT_TRIGGER_ACTION_MINIMUM_TIME_INTERVAL_PREFERENCE = "com.braze.android_default_trigger_action_minimum_time_interval"
         private const val SET_HANDLE_PUSH_DEEP_LINKS_AUTOMATICALLY_PREFERENCE = "com.braze.android_handle_push_deep_links_automatically"
         private const val CUSTOM_API_ENDPOINT_PREFERENCE = "com.braze.android_api_endpoint"
         private const val ENABLE_LOCATION_PREFERENCE = "com.braze.enable_location_collection"

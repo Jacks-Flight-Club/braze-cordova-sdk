@@ -390,6 +390,13 @@ BrazePlugin.prototype.getContentCardsFromCache = function (successCallback, erro
 }
 
 /**
+ * Subscribes to Content Cards event. The subscriber callback will be called when Content Cards are updated.
+ */
+BrazePlugin.prototype.subscribeToContentCardsUpdates = function (successCallback, errorCallback) {
+  cordova.exec(successCallback, errorCallback, "BrazePlugin", "subscribeToContentCardsUpdates");
+}
+
+/**
  * Launches a default Content Cards UI element.
  */
 BrazePlugin.prototype.launchContentCards = function () {
