@@ -1,4 +1,4 @@
-#import "AppDelegate.h"
+#import <Cordova/AppDelegate.h>
 
 @interface AppDelegate (BrazeNotifications)
 - (void)braze_swizzled_application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken;
