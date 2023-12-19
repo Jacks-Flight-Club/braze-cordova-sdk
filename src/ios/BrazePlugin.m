@@ -672,6 +672,19 @@ bool isInAppMessageSubscribed;
   [self sendCordovaSuccessPluginResultWithArray:mappedCards andCommand:command];
 }
 
+- (void)subscribeToContentCardsUpdates:(CDVInvokedUrlCommand *)command {
+  [self.subscriptions addObject:[self.braze.contentCards subscribeToUpdates:^(NSArray<BRZContentCardRaw *> *contentCards) {
+    
+    NSMutableArray *mappedCards = [NSMutableArray arrayWithCapacity:[contentCards count]];
+    [contentCards enumerateObjectsUsingBlock:^(id card, NSUInteger idx, BOOL *stop) {
+       [mappedCards addObject:[BrazePlugin formattedContentCard:card]];
+    }];
+      
+    CDVPluginResult *pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsArray:mappedCards];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+  }]];
+}
+
 - (void)getCardCountForCategories:(CDVInvokedUrlCommand *)command {
   NSArray *cardCategories = [self getCardCategoriesFromStringArray:command.arguments];
   int argumentsMask = [self getMaskFromCategories:cardCategories];

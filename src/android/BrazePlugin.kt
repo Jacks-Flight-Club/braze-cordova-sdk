@@ -535,6 +535,16 @@ open class BrazePlugin : CordovaPlugin() {
             GET_UNREAD_CARD_COUNT_FOR_CATEGORIES_METHOD -> return handleNewsFeedGetters(action, args, callbackContext)
             GET_CONTENT_CARDS_FROM_SERVER_METHOD,
             GET_CONTENT_CARDS_FROM_CACHE_METHOD -> return handleContentCardsUpdateGetters(action, callbackContext)
+            "subscribeToContentCardsUpdates" -> {
+                runOnBraze {
+                    it.subscribeToContentCardsUpdates { event: ContentCardsUpdatedEvent ->
+                        val result = PluginResult(PluginResult.Status.OK, mapContentCards(event.allCards))
+                        result.keepCallback = true
+                        callbackContext.sendPluginResult(result)
+                    }
+                }
+                return true
+            }
             LOG_CONTENT_CARDS_CLICKED_METHOD,
             LOG_CONTENT_CARDS_DISMISSED_METHOD,
             LOG_CONTENT_CARDS_IMPRESSION_METHOD -> return handleContentCardsLogMethods(action, args, callbackContext)

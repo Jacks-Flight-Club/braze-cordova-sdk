@@ -69,6 +69,7 @@
 - (void)requestContentCardsRefresh:(CDVInvokedUrlCommand *)command;
 - (void)getContentCardsFromServer:(CDVInvokedUrlCommand *)command;
 - (void)getContentCardsFromCache:(CDVInvokedUrlCommand *)command;
+- (void)subscribeToContentCardsUpdates:(CDVInvokedUrlCommand *)command;
 - (void)logContentCardClicked:(CDVInvokedUrlCommand *)command;
 - (void)logContentCardImpression:(CDVInvokedUrlCommand *)command;
 - (void)logContentCardDismissed:(CDVInvokedUrlCommand *)command;
