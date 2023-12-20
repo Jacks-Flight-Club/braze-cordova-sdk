@@ -1,5 +1,6 @@
 {
   "name": "braze-cordova-sdk",
   "version": "9.0.0",
-  "main": "www/BrazePlugin.js"
+  "main": "www/BrazePlugin.js",
+  "types": "www/BrazePlugin.d.ts"
 }
