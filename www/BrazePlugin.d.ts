@@ -119,7 +119,8 @@ export function setUserAttributionData(network, campaign, adgroup, creative);
  */
 export function setCustomUserAttribute(
   key: string,
-  value: number | boolean | Date | string | string[],
+  value: number | boolean | Date | string | string[] | object | object[] | null,
+  merge?: boolean
 );
 
 /**
